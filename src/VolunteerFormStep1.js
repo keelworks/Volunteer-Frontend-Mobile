@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import './VolunteerForm.css';
 import logo from './assets/keelworks-logo.png';
-
+import HeaderBackgroundImage from './assets/nav_background1.jpg';
 const VolunteerForm = ({ onNext }) => {
   const [formData, setFormData] = useState({
     firstName: '',
@@ -49,6 +49,7 @@ const VolunteerForm = ({ onNext }) => {
       <header className="form-header">
         <img src={logo} alt="KeelWorks Logo" className="header-logo" />
         <button className="donate-button">Donate</button>
+        <button className="login-button">Login</button>
         <div className="menu-icon">
           <div></div>
           <div></div>
@@ -57,18 +58,60 @@ const VolunteerForm = ({ onNext }) => {
       </header>
 
       <div className="form-content">
-        <h1>KeelWorks Volunteer</h1>
-        <h2>Sign Up</h2>
-        <p className="description">
-          Join our dedicated team of volunteers and make a lasting impact in our community.
-        </p>
-        <div className="steps">
-          <span className="step active">1</span>
-          <span className="step">2</span>
-          <span className="step">3</span>
-          <span className="step">4</span>
-          <span className="step">5</span>
+        <div className='header'>
+          <div className="headerText">
+            <h1>KeelWorks Volunteer Sign Up</h1>
+            <p className="description">
+              Join our dedicated team of volunteers and make a lasting impact in our community.
+            </p>
+          </div>
+          <img className="headerBgImg" src={HeaderBackgroundImage} alt="Keelworks Image" />
         </div>
+        {/* <div className="steps">
+          <span className="step active">1</span>
+          <div className="step-line"></div> 
+          <span className="step">2</span>
+          <div className="step-line"></div> 
+          <span className="step">3</span>
+          <div className="step-line"></div> 
+          <span className="step">4</span>
+          <div className="step-line"></div>
+          <span className="step">5</span>
+        </div> */}
+        <div className="steps">
+          <div className="step-container">
+            <span className="step active">1</span>
+            <span className="step-label">Personal Information</span>
+          </div>
+          <div className="step-line"></div>
+
+          <div className="step-container">
+            <span className="step">2</span>
+            <span className="step-label">Education and Experience</span>
+          </div>
+          <div className="step-line"></div>
+
+          <div className="step-container">
+            <span className="step">3</span>
+            <span className="step-label">Role and Availability</span>
+          </div>
+          <div className="step-line"></div>
+
+          <div className="step-container">
+            <span className="step">4</span>
+            <span className="step-label">Additional Information</span>
+          </div>
+          <div className="step-line"></div>
+
+          <div className="step-container">
+            <span className="step">5</span>
+            <span className="step-label">Identification</span>
+          </div>
+        </div>
+
+
+
+
         <p className="step-description">Step 1: Add your personal details below</p>
 
         <form onSubmit={handleSubmit}>
@@ -151,7 +194,7 @@ const VolunteerForm = ({ onNext }) => {
               ))}
             </select>
           </label>
-          
+
           <label className="checkbox-label">
             <input type="checkbox" name="isCurrentCountrySame" checked={formData.isCurrentCountrySame} onChange={handleChange} />
             Current country is same as home country?
@@ -182,7 +225,14 @@ const VolunteerForm = ({ onNext }) => {
           <p className="file-restriction">Maximum size: 2MB, file types allowed: PNG, JPEG</p>
 
           {/* Next Button to Move to Step 2 */}
-          <button type="submit" className="next-button">Next</button>
+          {/* <button type="submit" className="next-button">Next</button> */}
+          <button
+            type="submit"
+            className="next-button"
+            style={{ float: 'right' }}
+          >
+            Next
+          </button>
         </form>
       </div>
     </div>

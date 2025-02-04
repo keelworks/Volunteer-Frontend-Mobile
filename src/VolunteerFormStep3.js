@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import './VolunteerFormStep3.css';
 import logo from './assets/keelworks-logo.png';
+import HeaderBackgroundImage from './assets/nav_background1.jpg';
 
 const VolunteerFormStep3 = ({ onBack, onNext }) => {
   const [formData, setFormData] = useState({
@@ -31,6 +32,7 @@ const VolunteerFormStep3 = ({ onBack, onNext }) => {
       <header className="form-header">
         <img src={logo} alt="KeelWorks Logo" className="header-logo" />
         <button className="donate-button">Donate</button>
+        <button className="login-button">Login</button>
         <div className="menu-icon">
           <div></div>
           <div></div>
@@ -39,18 +41,58 @@ const VolunteerFormStep3 = ({ onBack, onNext }) => {
       </header>
 
       <div className="form-content">
-        <h1>KeelWorks Volunteer</h1>
-        <h2>Sign Up</h2>
-        <p className="description">
-          Join our dedicated team of volunteers and make a lasting impact in our community.
-        </p>
-        <div className="steps">
-          <span className="step completed">✓</span>
-          <span className="step completed">✓</span>
-          <span className="step active">3</span>
-          <span className="step">4</span>
-          <span className="step">5</span>
+        <div className='header'>
+          <div className="headerText">
+            <h1>KeelWorks Volunteer Sign Up</h1>
+            <p className="description">
+              Join our dedicated team of volunteers and make a lasting impact in our community.
+            </p>
+          </div>
+          <img className="headerBgImg" src={HeaderBackgroundImage} alt="Keelworks Image" />
         </div>
+        {/* <div className="steps">
+          <span className="step completed">✓</span>
+          <div className="step-line"></div> 
+          <span className="step completed">✓</span>
+          <div className="step-line"></div> 
+          <span className="step active">3</span>
+          <div className="step-line"></div> 
+          <span className="step">4</span>
+          <div className="step-line"></div> 
+          <span className="step">5</span>
+        </div> */}
+        <div className="steps">
+          <div className="step-container">
+            <span className="step completed">✓</span>
+            <span className="step-label">Personal Information</span>
+          </div>
+          <div className="step-line"></div>
+
+          <div className="step-container">
+            <span className="step completed">✓</span>
+            <span className="step-label">Education and Experience</span>
+          </div>
+          <div className="step-line"></div>
+
+          <div className="step-container">
+            <span className="step active">3</span>
+            <span className="step-label">Role and Availability</span>
+          </div>
+          <div className="step-line"></div>
+
+          <div className="step-container">
+            <span className="step">4</span>
+            <span className="step-label">Additional Information</span>
+          </div>
+          <div className="step-line"></div>
+
+          <div className="step-container">
+            <span className="step">5</span>
+            <span className="step-label">Identification</span>
+          </div>
+        </div>
+
+
         <p className="step-description">Step 3: Select your role and availability</p>
 
         <form onSubmit={handleSubmit}>
@@ -82,15 +124,15 @@ const VolunteerFormStep3 = ({ onBack, onNext }) => {
           <label className="checkbox-label">Do you need OPT support?*</label>
           <div className="checkbox-group">
             <label>
-              <input type="checkbox" name="optSupport" value="Yes, the OPT period has started" onChange={handleChange} /> 
+              <input type="checkbox" name="optSupport" value="Yes, the OPT period has started" onChange={handleChange} />
               Yes, the OPT period has started
             </label>
             <label>
-              <input type="checkbox" name="optSupport" value="Yes, approved but haven’t received the EAD card" onChange={handleChange} /> 
+              <input type="checkbox" name="optSupport" value="Yes, approved but haven’t received the EAD card" onChange={handleChange} />
               Yes, approved but haven’t received the EAD card
             </label>
             <label>
-              <input type="checkbox" name="optSupport" value="No" onChange={handleChange} /> 
+              <input type="checkbox" name="optSupport" value="No" onChange={handleChange} />
               No
             </label>
           </div>

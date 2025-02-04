@@ -205,33 +205,24 @@ textarea {
 
 /* NAVIGATION BUTTONS */
 .form-navigation {
-  display: flex;
+  display: flex; 
   justify-content: space-between;
+  align-items: center;
   margin-top: 20px;
+  width: 100%;
 }
 
-.back-button {
-  background-color: #ccc;
-  color: black;
+.back-button, .next-button {
+  width: 45%;
   padding: 12px;
   border-radius: 6px;
   font-size: 16px;
   font-weight: bold;
   border: none;
   cursor: pointer;
-  width: 45%;
-}
-
-.next-button {
-  background-color: #ffcc00;
-  color: black;
-  padding: 12px;
-  border-radius: 6px;
-  font-size: 16px;
-  font-weight: bold;
-  border: none;
-  cursor: pointer;
-  width: 45%;
+  box-sizing: border-box;
+  font-family: Arial, sans-serif;
+  margin: 0; 
 }
 
 .back-button:hover {

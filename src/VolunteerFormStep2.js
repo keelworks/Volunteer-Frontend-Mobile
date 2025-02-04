@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import './VolunteerFormStep2.css';
 import logo from './assets/keelworks-logo.png';
+import HeaderBackgroundImage from './assets/nav_background1.jpg';
 
 const VolunteerFormStep2 = ({ onBack, onNext }) => {
   const [formData, setFormData] = useState({
@@ -15,18 +16,18 @@ const VolunteerFormStep2 = ({ onBack, onNext }) => {
     const { name, value, files } = e.target;
 
     setFormData((prevData) => {
-        // If it's a section (array like experiences or education), update accordingly
-        if (section) {
-            const updatedSection = Array.isArray(prevData[section]) ? [...prevData[section]] : [];
-            updatedSection[index] = { ...updatedSection[index], [name]: files ? files[0] : value };
+      // If it's a section (array like experiences or education), update accordingly
+      if (section) {
+        const updatedSection = Array.isArray(prevData[section]) ? [...prevData[section]] : [];
+        updatedSection[index] = { ...updatedSection[index], [name]: files ? files[0] : value };
 
-            return { ...prevData, [section]: updatedSection };
-        }
+        return { ...prevData, [section]: updatedSection };
+      }
 
-        // Otherwise, update normal input fields like LinkedIn and Website
-        return { ...prevData, [name]: files ? files[0] : value };
+      // Otherwise, update normal input fields like LinkedIn and Website
+      return { ...prevData, [name]: files ? files[0] : value };
     });
-};
+  };
 
 
   const addEntry = (section) => {
@@ -60,6 +61,7 @@ const VolunteerFormStep2 = ({ onBack, onNext }) => {
       <header className="form-header">
         <img src={logo} alt="KeelWorks Logo" className="header-logo" />
         <button className="donate-button">Donate</button>
+        <button className="login-button">Login</button>
         <div className="menu-icon">
           <div></div>
           <div></div>
@@ -68,18 +70,57 @@ const VolunteerFormStep2 = ({ onBack, onNext }) => {
       </header>
 
       <div className="form-content">
-        <h1>KeelWorks Volunteer</h1>
-        <h2>Sign Up</h2>
-        <p className="description">
-          Join our dedicated team of volunteers and make a lasting impact in our community.
-        </p>
-        <div className="steps">
-          <span className="step completed">✓</span>
-          <span className="step active">2</span>
-          <span className="step">3</span>
-          <span className="step">4</span>
-          <span className="step">5</span>
+        <div className='header'>
+          <div className="headerText">
+            <h1>KeelWorks Volunteer Sign Up</h1>
+            <p className="description">
+              Join our dedicated team of volunteers and make a lasting impact in our community.
+            </p>
+          </div>
+          <img className="headerBgImg" src={HeaderBackgroundImage} alt="Keelworks Image" />
         </div>
+        {/* <div className="steps">
+          <span className="step completed">✓</span>
+          <div className="step-line"></div> 
+          <span className="step active">2</span>
+          <div className="step-line"></div> 
+          <span className="step">3</span>
+          <div className="step-line"></div> 
+          <span className="step">4</span>
+          <div className="step-line"></div> 
+          <span className="step">5</span>
+        </div> */}
+        <div className="steps">
+          <div className="step-container">
+            <span className="step completed">✓</span>
+            <span className="step-label">Personal Information</span>
+          </div>
+          <div className="step-line"></div>
+
+          <div className="step-container">
+            <span className="step active">2</span>
+            <span className="step-label">Education and Experience</span>
+          </div>
+          <div className="step-line"></div>
+
+          <div className="step-container">
+            <span className="step">3</span>
+            <span className="step-label">Role and Availability</span>
+          </div>
+          <div className="step-line"></div>
+
+          <div className="step-container">
+            <span className="step">4</span>
+            <span className="step-label">Additional Information</span>
+          </div>
+          <div className="step-line"></div>
+
+          <div className="step-container">
+            <span className="step">5</span>
+            <span className="step-label">Identification</span>
+          </div>
+        </div>
+
         <p className="step-description">Step 2: Add your education and experience</p>
 
         <form onSubmit={handleSubmit}>
