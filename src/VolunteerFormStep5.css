@@ -1,0 +1,161 @@
+/* FORM CONTAINER */
+.form-container {
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: #f9f9f9;
+}
+
+/* HEADER */
+.form-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: black;
+  padding: 15px 20px;
+  width: 100%;
+}
+
+.header-logo {
+  height: 40px;
+}
+
+/* DONATE BUTTON IN HEADER */
+.donate-button {
+  background-color: #ffcc00;
+  color: black;
+  font-weight: bold;
+  border: none;
+  padding: 6px 8px;
+  border-radius: 25px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.donate-button:hover {
+  background-color: #e6b800;
+}
+
+/* MENU ICON */
+.menu-icon {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 30px;
+  height: 22px;
+  cursor: pointer;
+}
+
+.menu-icon div {
+  width: 100%;
+  height: 4px;
+  background-color: white;
+  border-radius: 2px;
+}
+
+/* FORM CONTENT */
+.form-content {
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 400px;
+  text-align: left;
+}
+
+/* HEADINGS */
+h1 {
+  font-size: 24px;
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+h2 {
+  font-size: 20px;
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+.description {
+  font-size: 9px;
+  color: #f7f5f5;
+  margin-top: -10px;
+  text-align: center;
+}
+
+/* STEP PROGRESS */
+.steps {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.step {
+  width: 25px;
+  height: 25px;
+  border-radius: 50%;
+  background-color: #ccc;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: bold;
+}
+
+.step.active {
+  background-color: #ffcc00;
+  color: black;
+}
+
+.step.completed {
+  background-color: #ffcc00;
+  color: black;
+}
+
+/* FORM ELEMENTS */
+label {
+  display: block;
+  margin-bottom: 10px;
+  font-weight: bold;
+}
+
+select {
+  width: 100%;
+  padding: 10px;
+  margin-top: 5px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 14px;
+  background-color: #f8f8f8;
+  box-sizing: border-box;
+}
+
+/* NAVIGATION BUTTONS */
+.form-navigation {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+}
+
+.back-button, .submit-button {
+  width: 45%;
+  padding: 12px;
+  border-radius: 6px;
+  font-size: 16px;
+  font-weight: bold;
+  border: none;
+  cursor: pointer;
+}
+
+.submit-button {
+  background-color: #ffcc00;
+  color: black;
+}
+
+.submit-button:hover {
+  background-color: #e6b800;
+}
+
