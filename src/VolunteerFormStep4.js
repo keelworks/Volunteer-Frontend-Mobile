@@ -3,19 +3,27 @@ import './VolunteerFormStep4.css';
 import logo from './assets/keelworks-logo.png';
 import HeaderBackgroundImage from './assets/nav_background1.jpg';
 
-const VolunteerFormStep4 = ({ onBack, onNext }) => {
-  const [formData, setFormData] = useState({
-    interestReason: '',
-    additionalInfo: '',
-  });
+const VolunteerFormStep4 = ({ formData, setFormData, onBack, onNext }) => {
+  
+  
+  
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value,
-    });
-  };
+  const handleChange = (e, index, section) => {
+  const { name, value } = e.target;
+
+  setFormData((prevData) => {
+    if (section) {
+      return {
+        ...prevData,
+        [section]: prevData[section].map((item, idx) =>
+          idx === index ? { ...item, [name]: value } : item
+        ),
+      };
+    } else {
+      return { ...prevData, [name]: value || '' };
+    }
+  });
+};
 
   const handleSubmit = (e) => {
     e.preventDefault();

@@ -2,40 +2,26 @@ import React, { useState } from 'react';
 import './VolunteerForm.css';
 import logo from './assets/keelworks-logo.png';
 import HeaderBackgroundImage from './assets/nav_background1.jpg';
-const VolunteerForm = ({ onNext }) => {
-  const [formData, setFormData] = useState({
-    firstName: '',
-    middleName: '',
-    lastName: '',
-    email: '',
-    phoneNumber: '',
-    phoneType: 'Home',
-    addressLine1: '',
-    addressLine2: '',
-    city: '',
-    state: 'IN',
-    zipcode: '',
-    country: 'United States',
-    homeCountry: 'India',
-    timeZone: 'EDT',
-    profilePicture: null,
-    isCurrentCountrySame: false,
-  });
+const VolunteerForm = ({ formData, setFormData, onNext }) => {
+ 
 
-  const handleChange = (e) => {
-    const { name, value, type, checked, files } = e.target;
-    setFormData({
-      ...formData,
-      [name]: type === 'checkbox' ? checked : files ? files[0] : value,
-    });
+  const handleChange = (e, index, section) => {
+  const { name, value } = e.target;
 
-    if (name === 'isCurrentCountrySame' && checked) {
-      setFormData((prevData) => ({
+  setFormData((prevData) => {
+    if (section) {
+      return {
         ...prevData,
-        homeCountry: prevData.country,
-      }));
+        [section]: prevData[section].map((item, idx) =>
+          idx === index ? { ...item, [name]: value } : item
+        ),
+      };
+    } else {
+      return { ...prevData, [name]: value || '' };
     }
-  };
+  });
+};
+
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -119,47 +105,50 @@ const VolunteerForm = ({ onNext }) => {
           <div className="form-group">
             <label>
               First Name*
-              <input type="text" name="firstName" value={formData.firstName} onChange={handleChange} required />
+              <input type="text" name="first_name" value={formData.first_name} onChange={handleChange} required />
             </label>
 
             <label>
               Middle Name (optional)
-              <input type="text" name="middleName" value={formData.middleName} onChange={handleChange} placeholder="Grace" />
+              <input type="text" name="middle_name" value={formData.middle_name} onChange={handleChange} placeholder="Grace" />
             </label>
           </div>
 
           <label>
             Last Name*
-            <input type="text" name="lastName" value={formData.lastName} onChange={handleChange} required placeholder="Doe" />
+            <input type="text" name="last_name" value={formData.last_name} onChange={handleChange} required placeholder="Doe" />
           </label>
 
           <label>
             Email Address*
-            <input type="email" name="email" value={formData.email} onChange={handleChange} required placeholder="janedoe@gmail.com" />
+            <input type="email" name="personal_email" value={formData.personal_email} onChange={handleChange} required placeholder="janedoe@gmail.com" />
           </label>
 
           <label>
             Phone Number*
-            <input type="tel" name="phoneNumber" value={formData.phoneNumber} onChange={handleChange} required placeholder="+1 1234567890" />
+            <input type="tel" name="phone_number" value={formData.phone_number} onChange={handleChange} required placeholder="+1 1234567890" />
           </label>
-
+		  <label>
+			Birth Date*
+			<input type="date" name="birth_date" value={formData.birth_date} onChange={handleChange} required />
+			</label>
           <label>
             Phone Type*
-            <select name="phoneType" value={formData.phoneType} onChange={handleChange} required>
-              <option value="Home">Home</option>
-              <option value="Mobile">Mobile</option>
+            <select name="phonetype" value={formData.phonetype} onChange={handleChange} required>
+              <option value="Mobile">Home</option>
+              <option value="Home">Mobile</option>
               <option value="Work">Work</option>
             </select>
           </label>
 
           <label>
             Address Line 1*
-            <input type="text" name="addressLine1" value={formData.addressLine1} onChange={handleChange} required placeholder="123 Main Street" />
+            <input type="text" name="address_line_1" value={formData.address_line_1} onChange={handleChange} required placeholder="123 Main Street" />
           </label>
 
           <label>
             Address Line 2 (optional)
-            <input type="text" name="addressLine2" value={formData.addressLine2} onChange={handleChange} placeholder="Apartment, suite number, etc" />
+            <input type="text" name="address_line_2" value={formData.address_line_2} onChange={handleChange} placeholder="Apartment, suite number, etc" />
           </label>
 
           <label>
@@ -183,7 +172,7 @@ const VolunteerForm = ({ onNext }) => {
 
           <label>
             Zipcode*
-            <input type="text" name="zipcode" value={formData.zipcode} onChange={handleChange} required placeholder="01234" />
+            <input type="text" name="zip_code" value={formData.zip_code} onChange={handleChange} required placeholder="01234" />
           </label>
 
           <label>
@@ -210,13 +199,15 @@ const VolunteerForm = ({ onNext }) => {
           </label>
 
           <label>
-            Time Zone*
-            <select name="timeZone" value={formData.timeZone} onChange={handleChange} required>
-              {['EDT', 'IST', 'PST', 'CST'].map(zone => (
-                <option key={zone} value={zone}>{zone}</option>
-              ))}
-            </select>
-          </label>
+			Time Zone*
+			<select name="time_zone" value={formData.time_zone} onChange={handleChange} required >
+			<option value="">-- Select Time Zone --</option>
+			<option value="America/New_York">EDT</option>
+			<option value="Asia/Kolkata">IST</option>
+			<option value="America/Los_Angeles">PST</option>
+			<option value="America/Chicago">CST</option>
+			</select>
+		  </label>
 
           <label>
             Profile Picture (optional)

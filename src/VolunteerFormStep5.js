@@ -2,28 +2,32 @@ import React, { useState } from 'react';
 import './VolunteerFormStep5.css';
 import logo from './assets/keelworks-logo.png';
 import HeaderBackgroundImage from './assets/nav_background1.jpg';
+import { submitVolunteerForm } from './api'; // Import API function
+const VolunteerFormStep5 = ({ formData, setFormData, onBack, onSubmit }) => {
+  
 
-const VolunteerFormStep5 = ({ onBack, onSubmit }) => {
-  const [formData, setFormData] = useState({
-    gender: '',
-    sexualOrientation: '',
-    disability: '',
+  const handleChange = (e, index, section) => {
+  const { name, value } = e.target;
+
+  setFormData((prevData) => {
+    if (section) {
+      return {
+        ...prevData,
+        [section]: prevData[section].map((item, idx) =>
+          idx === index ? { ...item, [name]: value } : item
+        ),
+      };
+    } else {
+      return { ...prevData, [name]: value || '' };
+    }
   });
+};
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value,
-    });
-  };
-
-  const handleSubmit = (e) => {
+ const handleSubmit = (e) => {
     e.preventDefault();
     console.log('Final Submission:', formData);
     onSubmit();
   };
-
   return (
     <div className="form-container">
       {/* HEADER */}
@@ -91,11 +95,11 @@ const VolunteerFormStep5 = ({ onBack, onSubmit }) => {
         <form onSubmit={handleSubmit}>
           <label>
             Gender*
-            <select name="gender" value={formData.gender} onChange={handleChange} required>
+            <select name="gender" value={formData?.gender || ''} onChange={handleChange} required>
               <option value="">Select an option</option>
               <option value="Male">Male</option>
               <option value="Female">Female</option>
-              <option value="Non-Binary">Non-Binary</option>
+              <option value="Non-binary">Non-Binary</option>
               <option value="Prefer not to say">Prefer not to say</option>
             </select>
           </label>
@@ -105,7 +109,9 @@ const VolunteerFormStep5 = ({ onBack, onSubmit }) => {
             <select name="sexualOrientation" value={formData.sexualOrientation} onChange={handleChange} required>
               <option value="">Select an option</option>
               <option value="Heterosexual">Heterosexual</option>
-              <option value="LGBTQ+">LGBTQ+</option>
+              <option value="Homosexual">Homosexual</option>
+			  <option value="Bisexual">Bisexual</option>
+			  <option value="Asexual">Asexual</option>
               <option value="Prefer not to say">Prefer not to say</option>
             </select>
           </label>

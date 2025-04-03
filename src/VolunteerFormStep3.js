@@ -3,23 +3,35 @@ import './VolunteerFormStep3.css';
 import logo from './assets/keelworks-logo.png';
 import HeaderBackgroundImage from './assets/nav_background1.jpg';
 
-const VolunteerFormStep3 = ({ onBack, onNext }) => {
-  const [formData, setFormData] = useState({
-    interestedRole: '',
-    hoursAvailable: '',
-    visaStatus: '',
-    optSupport: '',
-    startDate: '',
+const VolunteerFormStep3 = ({formData, setFormData, onBack, onNext }) => {
+  
+  const handleChange = (e, index, section) => {
+  const { name, value } = e.target;
+
+  setFormData((prevData) => {
+    if (section) {
+      return {
+        ...prevData,
+        [section]: prevData[section].map((item, idx) =>
+          idx === index ? { ...item, [name]: value } : item
+        ),
+      };
+    } else {
+      return { ...prevData, [name]: value || '' };
+    }
   });
+};
+  const handleCheckboxChange = (e) => {
+  const { value, checked } = e.target;
 
-  const handleChange = (e) => {
-    const { name, value, type, checked } = e.target;
-    setFormData({
-      ...formData,
-      [name]: type === 'checkbox' ? checked : value,
-    });
-  };
+  setFormData((prevData) => {
+  const updatedOptSupport = checked
+    ? [...(Array.isArray(prevData.optSupport) ? prevData.optSupport : []), value] // ✅ Ensure optSupport is an array
+    : (Array.isArray(prevData.optSupport) ? prevData.optSupport.filter((opt) => opt !== value) : []);
 
+  return { ...prevData, optSupport: updatedOptSupport };
+});
+};
   const handleSubmit = (e) => {
     e.preventDefault();
     console.log(formData);
@@ -108,14 +120,14 @@ const VolunteerFormStep3 = ({ onBack, onNext }) => {
 
           <label>
             Hours available to volunteer weekly*
-            <input type="number" name="hoursAvailable" value={formData.hoursAvailable} onChange={handleChange} required placeholder="10 hours" />
+            <input type="number" name="hours_commitment" value={formData.hours_commitment} onChange={handleChange} required placeholder="10 hours" />
           </label>
 
           <label>
             Visa Status*
-            <select name="visaStatus" value={formData.visaStatus} onChange={handleChange} required>
+            <select name="visa_status" value={formData.visa_status} onChange={handleChange} required>
               <option value="">Select Visa Status</option>
-              {['F1 Visa', 'H1B Visa', 'Green Card Holder', 'Citizen'].map(visa => (
+              {['Citizen', 'Permanent Resident', 'Student Visa', 'Work Visa', 'Other'].map(visa => (
                 <option key={visa} value={visa}>{visa}</option>
               ))}
             </select>
@@ -124,22 +136,22 @@ const VolunteerFormStep3 = ({ onBack, onNext }) => {
           <label className="checkbox-label">Do you need OPT support?*</label>
           <div className="checkbox-group">
             <label>
-              <input type="checkbox" name="optSupport" value="Yes, the OPT period has started" onChange={handleChange} />
+              <input type="checkbox" value="Yes, the OPT period has started" onChange={handleCheckboxChange} checked={Array.isArray(formData.optSupport)&&(formData.optSupport.includes("Yes, the OPT period has started"))} />
               Yes, the OPT period has started
             </label>
             <label>
-              <input type="checkbox" name="optSupport" value="Yes, approved but haven’t received the EAD card" onChange={handleChange} />
+              <input type="checkbox" value="Yes, approved but haven’t received the EAD card" onChange={handleCheckboxChange} checked={Array.isArray(formData.optSupport) && (formData.optSupport.includes("Yes, approved but haven’t received the EAD card"))} />
               Yes, approved but haven’t received the EAD card
             </label>
             <label>
-              <input type="checkbox" name="optSupport" value="No" onChange={handleChange} />
+              <input type="checkbox" value="No" onChange={handleCheckboxChange} checked={Array.isArray(formData.optSupport)&&(formData.optSupport.includes("No"))} />
               No
             </label>
           </div>
 
           <label>
             Desired start date to join KeelWorks*
-            <input type="date" name="startDate" value={formData.startDate} onChange={handleChange} required />
+            <input type="date" name="start_date" value={formData.start_date} onChange={handleChange} required />
           </label>
 
           {/* Navigation Buttons */}

@@ -4,14 +4,14 @@ import logo from './assets/keelworks-logo.png';
 
 const VolunteerForm = ({ onNext }) => {
   const [formData, setFormData] = useState({
-    firstName: '',
-    middleName: '',
-    lastName: '',
-    email: '',
-    phoneNumber: '',
-    phoneType: 'Home',
-    addressLine1: '',
-    addressLine2: '',
+    first_name: '',
+    middle_name: '',
+    last_name: '',
+    personal_email: '',
+    phone_number: '',
+    phonetype: 'Home',
+    address_line_1: '',
+    address_line_2: '',
     city: '',
     state: 'IN',
     zipcode: '',
