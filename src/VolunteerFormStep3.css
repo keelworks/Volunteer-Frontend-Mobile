@@ -122,7 +122,8 @@ label {
   font-weight: bold;
 }
 
-input, select {
+input,
+select {
   width: 100%;
   padding: 10px;
   margin-top: 5px;
@@ -133,7 +134,7 @@ input, select {
   box-sizing: border-box;
 }
 
-/* CHECKBOX GROUP STYLING */
+/* CHECKBOX GROUP STYLING (generic) */
 .checkbox-group {
   display: flex;
   flex-direction: column;
@@ -148,12 +149,11 @@ input, select {
   font-size: 14px;
 }
 
-.checkbox-group input[type="checkbox"] {
+.checkbox-group input[type='checkbox'] {
   width: 18px;
   height: 18px;
   margin: 0;
 }
-
 
 /* NAVIGATION BUTTONS */
 .form-navigation {
@@ -162,7 +162,8 @@ input, select {
   margin-top: 20px;
 }
 
-.back-button, .next-button {
+.back-button,
+.next-button {
   width: 45%;
   padding: 12px;
   border-radius: 6px;
@@ -179,4 +180,36 @@ input, select {
 
 .next-button:hover {
   background-color: #e6b800;
+}
+
+/* ===== OPT radios (isolated, bullet-proof) ===== */
+.opt-radio-group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* Use a tiny grid so the circle + text always sit side-by-side */
+.opt-radio-option {
+  display: grid !important;
+  grid-template-columns: 20px 1fr; /* radio width, then flexible text */
+  align-items: start;
+  column-gap: 8px;
+  width: 100%;
+}
+
+.opt-radio-option input {
+  margin: 0;
+}
+
+.opt-radio-text {
+  line-height: 1.3;
+  white-space: normal; /* long text wraps under itself */
+}
+
+/* Ensure any global label rules don't interfere with our radios */
+.opt-radio-option label,
+.opt-radio-option span {
+  justify-content: flex-start !important;
+  width: auto !important;
 }

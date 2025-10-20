@@ -1,33 +1,42 @@
-import React, { useState } from 'react';
+// src/VolunteerFormStep5.js
+import React from 'react';
 import './VolunteerFormStep5.css';
 import logo from './assets/keelworks-logo.png';
 import HeaderBackgroundImage from './assets/nav_background1.jpg';
-import { submitVolunteerForm } from './api'; // Import API function
-const VolunteerFormStep5 = ({ formData, setFormData, onBack, onSubmit }) => {
-  
 
+const VolunteerFormStep5 = ({
+  formData,
+  setFormData,
+  onBack,
+  onSubmit,
+  // NEW optional props (safe if not passed)
+  submitting,
+  submitError,
+  submitOk,
+}) => {
   const handleChange = (e, index, section) => {
-  const { name, value } = e.target;
+    const { name, value } = e.target;
 
-  setFormData((prevData) => {
-    if (section) {
-      return {
-        ...prevData,
-        [section]: prevData[section].map((item, idx) =>
-          idx === index ? { ...item, [name]: value } : item
-        ),
-      };
-    } else {
-      return { ...prevData, [name]: value || '' };
-    }
-  });
-};
+    setFormData((prevData) => {
+      if (section) {
+        return {
+          ...prevData,
+          [section]: prevData[section].map((item, idx) =>
+            idx === index ? { ...item, [name]: value } : item
+          ),
+        };
+      } else {
+        return { ...prevData, [name]: value || '' };
+      }
+    });
+  };
 
- const handleSubmit = (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
     console.log('Final Submission:', formData);
-    onSubmit();
+    onSubmit && onSubmit();
   };
+
   return (
     <div className="form-container">
       {/* HEADER */}
@@ -43,7 +52,7 @@ const VolunteerFormStep5 = ({ formData, setFormData, onBack, onSubmit }) => {
       </header>
 
       <div className="form-content">
-        <div className='header'>
+        <div className="header">
           <div className="headerText">
             <h1>KeelWorks Volunteer Sign Up</h1>
             <p className="description">
@@ -52,13 +61,7 @@ const VolunteerFormStep5 = ({ formData, setFormData, onBack, onSubmit }) => {
           </div>
           <img className="headerBgImg" src={HeaderBackgroundImage} alt="Keelworks Image" />
         </div>
-        {/* <div className="steps">
-          <span className="step completed">✓</span>
-          <span className="step completed">✓</span>
-          <span className="step completed">✓</span>
-          <span className="step completed">✓</span>
-          <span className="step active">5</span>
-        </div> */}
+
         <div className="steps">
           <div className="step-container">
             <span className="step completed">✓</span>
@@ -92,10 +95,34 @@ const VolunteerFormStep5 = ({ formData, setFormData, onBack, onSubmit }) => {
 
         <p className="step-description">Step 5: Voluntary Identification</p>
 
+        {/* NEW: status banners (render only if props provided) */}
+        {submitOk ? (
+          <div
+            className="submit-ok-banner"
+            style={{ marginBottom: 12, padding: 12, background: '#e7f6e7' }}
+          >
+            Your application was submitted successfully.
+          </div>
+        ) : null}
+
+        {submitError ? (
+          <div
+            className="submit-error-banner"
+            style={{ marginBottom: 12, padding: 12, background: '#fdecea', color: '#b00020' }}
+          >
+            {submitError}
+          </div>
+        ) : null}
+
         <form onSubmit={handleSubmit}>
           <label>
             Gender*
-            <select name="gender" value={formData?.gender || ''} onChange={handleChange} required>
+            <select
+              name="gender"
+              value={formData?.gender || ''}
+              onChange={handleChange}
+              required
+            >
               <option value="">Select an option</option>
               <option value="Male">Male</option>
               <option value="Female">Female</option>
@@ -106,19 +133,30 @@ const VolunteerFormStep5 = ({ formData, setFormData, onBack, onSubmit }) => {
 
           <label>
             Sexual Orientation*
-            <select name="sexualOrientation" value={formData.sexualOrientation} onChange={handleChange} required>
+            {/* ✅ snake_case so backend accepts it */}
+            <select
+              name="sexual_orientation"
+              value={formData?.sexual_orientation || ''}
+              onChange={handleChange}
+              required
+            >
               <option value="">Select an option</option>
               <option value="Heterosexual">Heterosexual</option>
               <option value="Homosexual">Homosexual</option>
-			  <option value="Bisexual">Bisexual</option>
-			  <option value="Asexual">Asexual</option>
+              <option value="Bisexual">Bisexual</option>
+              <option value="Asexual">Asexual</option>
               <option value="Prefer not to say">Prefer not to say</option>
             </select>
           </label>
 
           <label>
             Disability*
-            <select name="disability" value={formData.disability} onChange={handleChange} required>
+            <select
+              name="disability"
+              value={formData?.disability || ''}
+              onChange={handleChange}
+              required
+            >
               <option value="">Select an option</option>
               <option value="No">No</option>
               <option value="Yes">Yes</option>
@@ -128,8 +166,21 @@ const VolunteerFormStep5 = ({ formData, setFormData, onBack, onSubmit }) => {
 
           {/* Navigation Buttons */}
           <div className="form-navigation">
-            <button type="button" className="back-button" onClick={onBack}>Back</button>
-            <button type="submit" className="submit-button">Submit</button>
+            <button
+              type="button"
+              className="back-button"
+              onClick={onBack}
+              disabled={!!submitting}
+            >
+              Back
+            </button>
+            <button
+              type="submit"
+              className="submit-button"
+              disabled={!!submitting}
+            >
+              {submitting ? 'Submitting…' : 'Submit'}
+            </button>
           </div>
         </form>
       </div>

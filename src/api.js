@@ -1,111 +1,254 @@
-const API_BASE_URL = "http://localhost:3000/api/v1/apply";
+// File: src/api.js
+// FINAL VERSION — includes home_country + LinkedIn + Website + proxy-safe setup
 
-const getAuthToken = () => localStorage.getItem("token"); // Retrieve JWT token
+/*******************************
+ * Backend base URL (CRA-friendly)
+ *******************************/
+const ENV_HOST =
+  (typeof process !== "undefined" &&
+    process.env &&
+    process.env.REACT_APP_BACKEND_ORIGIN) ||
+  (typeof import.meta !== "undefined" &&
+    import.meta.env &&
+    import.meta.env.VITE_BACKEND_ORIGIN) ||
+  "";
 
-export const submitVolunteerForm = async (formData) => {
-  const cityMap = {
-    "Indianapolis": 1,
-    "New York": 6,
-    "Los Angeles": 2,
-    "Chicago": 3
-  };
+// Empty string => same-origin (use CRA proxy)
+const API_HOST = ENV_HOST.trim();
+export const API_BASE_URL = `${API_HOST}/api/v1/apply`;
 
-  const countryMap = {
-    "United States": 1,
-    "India": 2,
-    "Canada": 3,
-    "Australia": 4
-  };
+/*******************************
+ * Helpers
+ *******************************/
+const MAX_RETRIES = 2;
+const BACKOFF_BASE_MS = 600;
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
-  const toYYYYMM = (date) => {
-  if (!date || !date.includes('/')) return '';
-  const [month, year] = date.split('/');
-  return `${year}/${month.padStart(2, '0')}`;
-};
-const allowedOptSupport = [
-  "Yes, the OPT period has started",
-  "Yes, approved but have not received the EAD card",
-  "No"
-];
-
-let optSupportValue = "No"; // Default fallback
-
-if (Array.isArray(formData.optSupport)) {
-  const match = formData.optSupport.find(val => allowedOptSupport.includes(val));
-  if (match) optSupportValue = match;
-} else if (allowedOptSupport.includes(formData.opt_support)) {
-  optSupportValue = formData.opt_support;
-}
-  const transformedData = {
-    first_name: formData.first_name,
-    middle_name: formData.middle_name,
-    last_name: formData.last_name,
-	birth_date: formData.birth_date,
-    personal_email: formData.personal_email,
-    phone: formData.phone_number,
-    phonetype: formData.phonetype || "Mobile",
-    address_line_1: formData.address_line_1,
-    city_id: cityMap[formData.city],
-    state: formData.state,
-    zip_code: formData.zip_code,
-    country_id: countryMap[formData.country] || 1,
-    gender: formData.gender,
-    opt_support: optSupportValue,
-    visa_status: formData.visa_status,
-    start_date: formData.start_date,
-    hours_commitment: parseInt(formData.hours_commitment, 10) || 0,
-    why_kworks: formData.why_kworks || formData.interestReason,
-    application_status: "pending",
-    linkedin_url: formData.linkedin_url || "",
-    additional_websites: formData.website || "",
-    additional_info: formData.additionalInfo || "",
-	time_zone: formData.time_zone, 
-    sexual_orientation: formData.sexualOrientation,
-    disability: formData.disability,
-    educations: (formData.educations || []).map((edu) => ({
-  institution_name: edu.institution_name,
-  degree: edu.degree,
-  major: edu.major,
-  start_date: toYYYYMM(edu.start_date),
-  end_date: toYYYYMM(edu.end_date)
-})),
-    employments: (formData.employments || []).map((job) => ({
-  company_name: job.company_name,
-  job_title: job.job_title,
-  location: job.location,
-  start_date: toYYYYMM(job.start_date),
-  end_date: toYYYYMM(job.end_date),
-  responsibilities: job.responsibilities
-})),
-	...(formData.address_line_2 && { address_line_2: formData.address_line_2 })
-  };
-
-  // Optional cleanup
-  if (!formData.resume) delete transformedData.resume;
-
-  try {
-    const response = await fetch("http://localhost:3000/api/v1/apply/employees", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      credentials: "include",
-      body: JSON.stringify(transformedData)
-    });
-
-    const result = await response.json();
-    console.log("🔹 Server Response Status:", response.status);
-    console.log("🔹 Server Response Data:", result);
-
-    if (!response.ok) {
-      throw new Error("Server Error: " + response.status);
+const fetchJSON = async (url, options = {}) => {
+  let lastError;
+  for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
+    try {
+      const resp = await fetch(url, options);
+      const raw = await resp.text();
+      let data;
+      try {
+        data = raw ? JSON.parse(raw) : null;
+      } catch {
+        data = raw;
+      }
+      if (!resp.ok) {
+        const msg =
+          (data && typeof data === "object" && (data.error || data.message)) ||
+          `Request failed: ${resp.status}`;
+        throw new Error(msg);
+      }
+      return data;
+    } catch (err) {
+      lastError = err;
+      if (attempt < MAX_RETRIES) {
+        const jitter = Math.random() * BACKOFF_BASE_MS;
+        await sleep((2 ** attempt) * BACKOFF_BASE_MS + jitter);
+      }
     }
-
-    return { success: true, data: result };
-  } catch (error) {
-    console.error("❌ API Request Failed:", error);
-    return { success: false, message: error.message };
   }
+  throw lastError;
 };
 
+const readToken = () => {
+  const ls =
+    (typeof window !== "undefined" &&
+      window.localStorage &&
+      localStorage.getItem("kw_token")) || "";
+  const env =
+    (typeof process !== "undefined" &&
+      process.env &&
+      (process.env.REACT_APP_API_TOKEN || process.env.REACT_APP_BEARER_TOKEN)) ||
+    (typeof import.meta !== "undefined" &&
+      import.meta.env &&
+      (import.meta.env.VITE_API_TOKEN || import.meta.env.VITE_BEARER_TOKEN)) ||
+    "";
+  return ls || env || "";
+};
 
+const authHeader = () => {
+  const token = readToken();
+  const bearer = token?.startsWith("Bearer ") ? token : token ? `Bearer ${token}` : "";
+  return bearer ? { Authorization: bearer } : {};
+};
+
+const UPLOAD_FIELD_NAME =
+  (typeof process !== "undefined" &&
+    process.env &&
+    process.env.REACT_APP_UPLOAD_FIELD_NAME) ||
+  (typeof import.meta !== "undefined" &&
+    import.meta.env &&
+    import.meta.env.VITE_UPLOAD_FIELD_NAME) ||
+  "documents";
+
+const normalizeUrl = (u) => {
+  if (!u) return "";
+  const s = String(u).trim();
+  if (!s) return "";
+  return /^https?:\/\//i.test(s) ? s : `https://${s}`;
+};
+
+/*******************************
+ * API: reference data
+ *******************************/
+export const getCountries = () =>
+  fetchJSON(`${API_BASE_URL}/countries`, {
+    headers: { accept: "application/json", ...authHeader() },
+  });
+
+export const getStates = (countryCode) =>
+  fetchJSON(`${API_BASE_URL}/states/${encodeURIComponent(countryCode)}`, {
+    headers: { accept: "application/json", ...authHeader() },
+  });
+
+export const getCities = (stateId) =>
+  fetchJSON(`${API_BASE_URL}/cities/${encodeURIComponent(stateId)}`, {
+    headers: { accept: "application/json", ...authHeader() },
+  });
+
+/*******************************
+ * Upload Document
+ *******************************/
+export const uploadDocument = async (file) => {
+  if (!file) return null;
+
+  const tokenHeader = authHeader();
+  if (!tokenHeader.Authorization) {
+    console.warn("[api] No JWT token found; skipping document upload.");
+    return null;
+  }
+
+  const form = new FormData();
+  form.append(UPLOAD_FIELD_NAME, file, file.name);
+
+  const resp = await fetch(`${API_BASE_URL}/upload`, {
+    method: "POST",
+    headers: { ...tokenHeader },
+    body: form,
+    cache: "no-store",
+  });
+
+  const raw = await resp.text();
+  let data;
+  try {
+    data = raw ? JSON.parse(raw) : null;
+  } catch {
+    data = raw;
+  }
+
+  if (resp.status === 401 || resp.status === 403) {
+    console.warn("[api] Upload unauthorized; continuing without resume_url.", data);
+    return null;
+  }
+
+  if (!resp.ok) {
+    const msg =
+      (data && typeof data === "object" && (data.error || data.message)) ||
+      `Upload failed: ${resp.status}`;
+    throw new Error(msg);
+  }
+
+  const url =
+    (Array.isArray(data?.data) && data.data[0]?.url) ||
+    data?.data?.url ||
+    data?.url ||
+    (Array.isArray(data) && data[0]?.url) ||
+    null;
+
+  return url;
+};
+
+/*******************************
+ * Submit Volunteer Form
+ *******************************/
+export const submitVolunteerForm = async (formPayload) => {
+  // Upload resume (optional)
+  let resumeUrl = formPayload?.resume_url || null;
+  const candidateFile = formPayload?.resume instanceof File ? formPayload.resume : null;
+
+  if (!resumeUrl && candidateFile) {
+    try {
+      resumeUrl = await uploadDocument(candidateFile);
+    } catch (e) {
+      console.error("[api] Resume upload error:", e?.message || e);
+    }
+  }
+
+  // Build backend-expected payload
+  const payload = {
+    first_name: formPayload.first_name || "",
+    last_name: formPayload.last_name || "",
+    birth_date: formPayload.birth_date || "",
+
+    personal_email: formPayload.personal_email || formPayload.email || "",
+
+    phone: formPayload.phone ?? formPayload.phone_number ?? "",
+    phonetype: formPayload.phonetype || "Mobile",
+    gender: formPayload.gender || "",
+
+    linkedin_url: normalizeUrl(formPayload.linkedin_url || formPayload.linkedin || ""),
+    website: normalizeUrl(formPayload.website || ""),
+
+    opt_support: formPayload.opt_support ?? "No",
+    desired_start_date: formPayload.desired_start_date || "",
+    hours_commitment:
+      typeof formPayload.hours_commitment === "number"
+        ? formPayload.hours_commitment
+        : formPayload.hours_commitment
+        ? Number(formPayload.hours_commitment)
+        : 0,
+
+    why_kworks: formPayload.why_kworks || "",
+    visa_status: formPayload.visa_status || "",
+
+    // ✅ Required numeric home_country
+    home_country:
+      typeof formPayload.home_country === "number"
+        ? formPayload.home_country
+        : formPayload.home_country
+        ? Number(formPayload.home_country)
+        : 0,
+
+    country_code_phone:
+      formPayload.country_code_phone ||
+      formPayload.country_code ||
+      formPayload.country_code_phone_prefix ||
+      "+1",
+
+    application_status: formPayload.application_status || "Pending",
+
+    ...(resumeUrl ? { resume_url: resumeUrl } : {}),
+  };
+
+  if (formPayload.middle_name) payload.middle_name = formPayload.middle_name;
+
+  console.log("[api] Submitting payload to /employees:", payload);
+
+  const resp = await fetch(`${API_BASE_URL}/employees`, {
+    method: "POST",
+    headers: { "content-type": "application/json", ...authHeader() },
+    body: JSON.stringify(payload),
+  });
+
+  const raw = await resp.text();
+  let data;
+  try {
+    data = raw ? JSON.parse(raw) : null;
+  } catch {
+    data = raw;
+  }
+
+  if (!resp.ok) {
+    const details =
+      (data && typeof data === "object" && (data.error || data.message)) ||
+      (typeof data === "string" ? data : "") ||
+      `HTTP ${resp.status}`;
+    throw new Error(details);
+  }
+
+  return data;
+};
